@@ -6,7 +6,7 @@ import Header from "./Header";
 
 function App() {
   const [searchText, setSearchText] = useState("");
-
+  const [jobItems, setJobItems] = useState([]);
   useEffect(() => {
     if (!searchText) return;
     const fetchData = async () => {
@@ -14,7 +14,7 @@ function App() {
         `https://bytegrad.com/course-assets/projects/rmtdev/api/data?search=${searchText}`
       );
       const data = await response.json();
-      console.log(data);
+      setJobItems(data.jobItems);
     };
     fetchData();
   }, [searchText]);
@@ -23,7 +23,7 @@ function App() {
     <>
       <Background />
       <Header searchText={searchText} setSearchText={setSearchText} />
-      <Container />
+      <Container jobItems={jobItems} />
       <Footer />
     </>
   );
