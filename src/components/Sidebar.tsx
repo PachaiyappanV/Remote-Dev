@@ -1,15 +1,5 @@
-import JobList from "./JobList";
-import ResultsCount from "./ResultsCount";
-import SortingControls from "./SortingControls";
+import { ReactNode } from "react";
 
-export default function Sidebar({ jobItems }) {
-  return (
-    <div className="sidebar">
-      <div className="sidebar__top">
-        <ResultsCount />
-        <SortingControls />
-      </div>
-      <JobList jobItems={jobItems} />
-    </div>
-  );
+export default function Sidebar({ children }: { children: ReactNode }) {
+  return <div className="sidebar">{children}</div>;
 }

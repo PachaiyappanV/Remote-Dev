@@ -3,6 +3,16 @@ import Background from "./Background";
 import Container from "./Container";
 import Footer from "./Footer";
 import Header from "./Header";
+import BookmarksButton from "./BookmarksButton";
+import Logo from "./Logo";
+import SearchForm from "./SearchForm";
+import HeaderTop from "./HeaderTop";
+import JobItemContent from "./JobItemContent";
+import Sidebar from "./Sidebar";
+import JobList from "./JobList";
+import ResultsCount from "./ResultsCount";
+import SortingControls from "./SortingControls";
+import SidebarTop from "./SidebarTop";
 
 function App() {
   const [searchText, setSearchText] = useState("");
@@ -22,8 +32,26 @@ function App() {
   return (
     <>
       <Background />
-      <Header searchText={searchText} setSearchText={setSearchText} />
-      <Container jobItems={jobItems} />
+
+      <Header>
+        <HeaderTop>
+          <Logo />
+          <BookmarksButton />
+        </HeaderTop>
+        <SearchForm searchText={searchText} setSearchText={setSearchText} />
+      </Header>
+
+      <Container>
+        <Sidebar>
+          <SidebarTop>
+            <ResultsCount />
+            <SortingControls />
+          </SidebarTop>
+          <JobList jobItems={jobItems} />
+        </Sidebar>
+        <JobItemContent />
+      </Container>
+
       <Footer />
     </>
   );
