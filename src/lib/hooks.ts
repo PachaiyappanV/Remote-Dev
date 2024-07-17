@@ -14,6 +14,10 @@ const fetchJobItems = async (
   searchText: string
 ): Promise<JobItemsApiResponse> => {
   const response = await fetch(`${BASE_URL}?search=${searchText}`);
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.description);
+  }
   const data = await response.json();
   return data;
 };
@@ -62,6 +66,10 @@ type JobItemApiResponse = {
 
 const fetchJobItem = async (id: string): Promise<JobItemApiResponse> => {
   const response = await fetch(`${BASE_URL}/${id}`);
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.description);
+  }
   const data = await response.json();
   return data;
 };
