@@ -7,7 +7,7 @@ export function JobList({
   jobItems,
   isLoading,
 }: {
-  jobItems: JobItem[];
+  jobItems: JobItem[] | undefined;
   isLoading: boolean;
 }) {
   const activeId = useActiveId();
@@ -15,7 +15,7 @@ export function JobList({
     <ul className="job-list">
       {isLoading && <Spinner />}
       {!isLoading &&
-        jobItems.map((jobItem) => (
+        jobItems?.map((jobItem) => (
           <JobListItem
             key={jobItem.id}
             jobItem={jobItem}

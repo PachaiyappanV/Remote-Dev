@@ -18,7 +18,7 @@ import { useState } from "react";
 function App() {
   const [searchText, setSearchText] = useState("");
   const debouncedValue = useDebounce(searchText, 300);
-  const [jobItems, isLoading, totalNumberOfResults] =
+  const { jobItems, isLoading, totalNumberOfResults } =
     useJobItems(debouncedValue);
 
   return (

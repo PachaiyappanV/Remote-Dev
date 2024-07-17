@@ -3,23 +3,38 @@ import { JobItem, JobItemExpanded } from "./types";
 import { BASE_URL } from "./constants";
 import { useQuery } from "@tanstack/react-query";
 
-export const useJobItems = (searchText: string) => {
-  const [jobItems, setJobItems] = useState<JobItem[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const totalNumberOfResults = jobItems.length;
-  useEffect(() => {
-    if (!searchText) return;
-    const fetchData = async () => {
-      setIsLoading(true);
-      const response = await fetch(`${BASE_URL}?search=${searchText}`);
-      const data = await response.json();
-      setIsLoading(false);
-      setJobItems(data.jobItems);
-    };
-    fetchData();
-  }, [searchText]);
+//-----------------------------------Getting job items----------------------------//
 
-  return [jobItems, isLoading, totalNumberOfResults] as const;
+type JobItemsApiResponse = {
+  public: boolean;
+  sorted: boolean;
+  jobItems: JobItem[];
+};
+const fetchJobItems = async (
+  searchText: string
+): Promise<JobItemsApiResponse> => {
+  const response = await fetch(`${BASE_URL}?search=${searchText}`);
+  const data = await response.json();
+  return data;
+};
+
+export const useJobItems = (searchText: string) => {
+  const { data, isInitialLoading } = useQuery(
+    ["job-items", searchText],
+    () => fetchJobItems(searchText),
+    {
+      staleTime: 1000 * 60 * 60,
+      refetchOnWindowFocus: false,
+      enabled: Boolean(searchText),
+      retry: false,
+    }
+  );
+
+  return {
+    jobItems: data?.jobItems,
+    isLoading: isInitialLoading,
+    totalNumberOfResults: data?.jobItems.length,
+  } as const;
 };
 
 export const useActiveId = () => {
@@ -37,6 +52,8 @@ export const useActiveId = () => {
   }, []);
   return activeId;
 };
+
+//-----------------------------------Getting job item----------------------------//
 
 type JobItemApiResponse = {
   public: boolean;
@@ -57,6 +74,7 @@ export const useJobItem = (id: string | null) => {
       staleTime: 1000 * 60 * 60,
       refetchOnWindowFocus: false,
       enabled: Boolean(id),
+      retry: false,
     }
   );
   return { jobItem: data?.jobItem, isLoading: isInitialLoading } as const;
