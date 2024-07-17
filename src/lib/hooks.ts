@@ -5,6 +5,7 @@ import { BASE_URL } from "./constants";
 export const useJobItems = (searchText: string) => {
   const [jobItems, setJobItems] = useState<JobItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const totalNumberOfResults = jobItems.length;
   useEffect(() => {
     if (!searchText) return;
     const fetchData = async () => {
@@ -17,7 +18,7 @@ export const useJobItems = (searchText: string) => {
     fetchData();
   }, [searchText]);
 
-  return [jobItems, isLoading] as const;
+  return [jobItems, isLoading, totalNumberOfResults] as const;
 };
 
 export const useActiveId = () => {
@@ -52,4 +53,14 @@ export const useJobItem = (id: string | null) => {
     fetchJob();
   }, [id]);
   return [jobItem, isLoading] as const;
+};
+
+export const useDebounce = <T>(value: T, delay = 500): T => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+  useEffect(() => {
+    const timerId = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(timerId);
+  }, [value, delay]);
+
+  return debouncedValue;
 };
