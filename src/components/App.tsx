@@ -14,12 +14,14 @@ import SortingControls from "./SortingControls";
 import SidebarTop from "./SidebarTop";
 import { useDebounce, useJobItems } from "../lib/hooks";
 import { useState } from "react";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   const [searchText, setSearchText] = useState("");
   const debouncedValue = useDebounce(searchText, 300);
-  const { jobItems, isLoading, totalNumberOfResults } =
-    useJobItems(debouncedValue);
+  const { jobItems, isLoading } = useJobItems(debouncedValue);
+
+  const totalNumberOfResults = jobItems.length;
 
   return (
     <>
@@ -45,6 +47,7 @@ function App() {
       </Container>
 
       <Footer />
+      <Toaster position="top-right" />
     </>
   );
 }

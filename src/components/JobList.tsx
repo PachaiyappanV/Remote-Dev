@@ -7,7 +7,7 @@ export function JobList({
   jobItems,
   isLoading,
 }: {
-  jobItems: JobItem[] | undefined;
+  jobItems: JobItem[];
   isLoading: boolean;
 }) {
   const activeId = useActiveId();

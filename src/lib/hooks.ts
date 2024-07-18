@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { JobItem, JobItemExpanded } from "./types";
 import { BASE_URL } from "./constants";
 import { useQuery } from "@tanstack/react-query";
+import { handleError } from "./utils";
 
 //-----------------------------------Getting job items----------------------------//
 
@@ -31,13 +32,13 @@ export const useJobItems = (searchText: string) => {
       refetchOnWindowFocus: false,
       enabled: Boolean(searchText),
       retry: false,
+      onError: handleError,
     }
   );
 
   return {
-    jobItems: data?.jobItems,
+    jobItems: data?.jobItems || [],
     isLoading: isInitialLoading,
-    totalNumberOfResults: data?.jobItems.length,
   } as const;
 };
 

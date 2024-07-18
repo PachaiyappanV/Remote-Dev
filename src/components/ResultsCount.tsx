@@ -1,7 +1,7 @@
 export default function ResultsCount({
   totalNumberOfResults,
 }: {
-  totalNumberOfResults: number | undefined;
+  totalNumberOfResults: number;
 }) {
   return <p className="count">{totalNumberOfResults} results</p>;
 }
