@@ -22,10 +22,22 @@ function App() {
   const debouncedValue = useDebounce(searchText, 300);
   const { jobItems, isLoading } = useJobItems(debouncedValue);
   const [currentPage, setCurrentPage] = useState(1);
+  const [sortBy, setSortBy] = useState<"relevant" | "recent">("relevant");
 
   const totalNumberOfResults = jobItems.length;
   const totalNumberOfPages = totalNumberOfResults / 7;
-  const jobItemsSliced = jobItems.slice(currentPage * 7 - 7, currentPage * 7);
+  const jobItemsSorted = [...jobItems].sort((a, b) => {
+    if (sortBy === "relevant") {
+      return b.relevanceScore - a.relevanceScore;
+    } else if (sortBy === "recent") {
+      return a.daysAgo - b.daysAgo;
+    }
+    return 0;
+  });
+  const jobItemsSortedAndSliced = jobItemsSorted.slice(
+    currentPage * 7 - 7,
+    currentPage * 7
+  );
 
   const handlePageChange = (direction: "prev" | "next") => {
     if (direction === "prev") {
@@ -33,6 +45,11 @@ function App() {
     } else if (direction === "next") {
       setCurrentPage((prev) => prev + 1);
     }
+  };
+
+  const handleSortByChange = (newSortBy: "relevant" | "recent") => {
+    setCurrentPage(1);
+    setSortBy(newSortBy);
   };
   return (
     <>
@@ -50,9 +67,9 @@ function App() {
         <Sidebar>
           <SidebarTop>
             <ResultsCount totalNumberOfResults={totalNumberOfResults} />
-            <SortingControls />
+            <SortingControls sortBy={sortBy} onClick={handleSortByChange} />
           </SidebarTop>
-          <JobList jobItems={jobItemsSliced} isLoading={isLoading} />
+          <JobList jobItems={jobItemsSortedAndSliced} isLoading={isLoading} />
           <PaginationControls
             currentPage={currentPage}
             onClick={handlePageChange}
