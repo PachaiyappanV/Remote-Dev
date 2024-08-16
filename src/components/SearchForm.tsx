@@ -1,4 +1,10 @@
-export default function SearchForm({ searchText, setSearchText }) {
+export default function SearchForm({
+  searchText,
+  setSearchText,
+}: {
+  searchText: string;
+  setSearchText: React.Dispatch<React.SetStateAction<string>>;
+}) {
   return (
     <form action="#" className="search">
       <button type="submit">
