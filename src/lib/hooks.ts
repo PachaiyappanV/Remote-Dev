@@ -1,11 +1,11 @@
-import { useState, useEffect, useContext } from "react";
-import { JobItem, JobItemExpanded } from "./types";
-import { BASE_URL } from "./constants";
-import { useQuery } from "@tanstack/react-query";
-import { handleError } from "./utils";
+import { useQueries, useQuery } from "@tanstack/react-query";
+import { useContext, useEffect, useState } from "react";
 import { BookmarksContext } from "../contexts/BookmarksContextProvider";
+import { BASE_URL } from "./constants";
+import { JobItem, JobItemExpanded } from "./types";
+import { handleError } from "./utils";
 
-//-----------------------------------Getting job items----------------------------//
+//-------------------------Getting job items by serch query----------------------//
 
 type JobItemsApiResponse = {
   public: boolean;
@@ -24,7 +24,7 @@ const fetchJobItems = async (
   return data;
 };
 
-export const useJobItems = (searchText: string) => {
+export const useSearchQuery = (searchText: string) => {
   const { data, isInitialLoading } = useQuery(
     ["job-items", searchText],
     () => fetchJobItems(searchText),
@@ -42,7 +42,7 @@ export const useJobItems = (searchText: string) => {
     isLoading: isInitialLoading,
   } as const;
 };
-
+//----------------------------Getting active id----------------------------------//
 export const useActiveId = () => {
   const [activeId, setActiveId] = useState<string | null>(null);
 
@@ -51,6 +51,7 @@ export const useActiveId = () => {
       const id = window.location.hash.slice(1);
       setActiveId(id);
     };
+    handleHashChange();
     window.addEventListener("hashchange", handleHashChange);
     return () => {
       window.removeEventListener("hashchange", handleHashChange);
@@ -88,6 +89,29 @@ export const useJobItem = (id: string | null) => {
     }
   );
   return { jobItem: data?.jobItem, isLoading: isInitialLoading } as const;
+};
+
+//--------------------Getting job items by job ids-------------------------------//
+
+export const useJobItems = (ids: number[]) => {
+  const results = useQueries({
+    queries: ids.map((id) => ({
+      queryKey: ["job-item", id],
+      queryFn: () => fetchJobItem(String(id)),
+      staleTime: 1000 * 60 * 60,
+      refetchOnWindowFocus: false,
+      retry: false,
+      enabled: Boolean(id),
+      onError: handleError,
+    })),
+  });
+  const jobItems = results
+    .map((result) => result.data?.jobItem)
+    //.filter((jobItem) => jobItem !== undefined);
+    // .filter((jobItem) => !!jobItem);
+    .filter((jobItem) => Boolean(jobItem)) as JobItemExpanded[];
+  const isLoading = results.some((result) => result.isLoading);
+  return { jobItems, isLoading } as const;
 };
 
 export const useDebounce = <T>(value: T, delay = 500): T => {
